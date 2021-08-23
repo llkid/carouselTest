@@ -6,7 +6,6 @@
 #pragma execution_character_set("utf-8")
 
 carouselTest::carouselTest(QWidget* parent) : QMainWindow(parent) {
-  // ui.setupUi(this);
 
   CarouselWidget* cw = new CarouselWidget(this);
   cw->setNavPosition(Left);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include "ui_carouseltest.h"
 
 class carouselTest : public QMainWindow
 {
@@ -9,7 +8,4 @@ class carouselTest : public QMainWindow
 
 public:
     carouselTest(QWidget *parent = Q_NULLPTR);
-
-private:
-    //Ui::carouselTestClass ui;
 };
