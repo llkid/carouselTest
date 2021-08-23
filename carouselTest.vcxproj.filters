@@ -43,21 +43,9 @@
     <ClCompile Include="carouselwidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="imagelabel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fannerarrow.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="carouselwidget.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="imagelabel.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="fannerarrow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

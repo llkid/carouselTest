@@ -6,14 +6,13 @@
 #include <qpainter.h>
 #include <qtimer.h>
 #include <qevent.h>
+#include <qlabel.h>
 
 #include <QHBoxLayout>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
 #include <QSequentialAnimationGroup>
 #include <QMouseEvent>
-
-#include "imagelabel.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -45,10 +44,6 @@ IndicatorProperty CarouselWidget::getIndicatorProperty() const {
 
 int CarouselWidget::getInterval() const { return intervalGap; }
 
-QString CarouselWidget::getImageNames() const { return imageNames; }
-
-QString CarouselWidget::getImageTips() const { return imageTips; }
-
 NavPosition CarouselWidget::getNavPosition() const { return navPosition; }
 
 NavStyle CarouselWidget::getNavStyle() const { return navStyle; }
@@ -79,8 +74,7 @@ void CarouselWidget::setIndicatorProperty(IndicatorProperty& ip) {
   this->ip_.reset(&ip);
 }
 
-void CarouselWidget::setImageNames(const QString& imageNames) {
-  this->imageNames = imageNames;
+void CarouselWidget::addImage(const QString& imageNames) {
   names.append(imageNames);
 
   auto lab = new QLabel;
@@ -98,10 +92,6 @@ void CarouselWidget::setImageNames(const QString& imageNames) {
   indicatorLayout->insertWidget(leftExists ? labs.size() : labs.size() - 1,
                                 lab);
   lab->installEventFilter(this);
-}
-
-void CarouselWidget::setImageTips(const QString& imageTips) {
-  this->imageTips = imageTips;
 }
 
 void CarouselWidget::setNavPosition(const NavPosition& navPosition) {
@@ -129,12 +119,20 @@ void CarouselWidget::setNavStyle(const NavStyle& navStyle) {
   }
 
   this->navStyle = navStyle;
-  initQss();
 
   if (navStyle != NavStyle::Bar) {
+    initQss();
     for (int i = 0; i < labs.size(); ++i) {
       auto lab = labs.at(i);
-      lab->setFixedSize(ip_->indicatorMaxWidth, ip_->indicatorMaxWidth);
+      lab->setFixedSize(ip_->indicatorMaxWidth, ip_->indicatorMaxHeight);
+      lab->setStyleSheet(i == currentIndex ? qssCurrent : qssNormal);
+    }
+  } else {
+    ip_->indicatorRadius = 3;
+    initQss();
+    for (int i = 0; i < labs.size(); ++i) {
+      auto lab = labs.at(i);
+      lab->setFixedHeight(ip_->indicatorMinHeight);
       lab->setStyleSheet(i == currentIndex ? qssCurrent : qssNormal);
     }
   }
@@ -322,19 +320,16 @@ void CarouselWidget::initForm() {
   ip_.reset(new IndicatorProperty);
 
   ip_->indicatorMinHeight = 6;
-  ip_->indicatorMaxHeight = 6;
+  ip_->indicatorMaxHeight = 24;
   ip_->indicatorMinWidth = 6;
-  ip_->indicatorMaxWidth = 25;
-  ip_->indicatorRadius = 3;
+  ip_->indicatorMaxWidth = 24;
+  ip_->indicatorRadius = 12;
   intervalGap = 3000;
 
   ip_->indicatorColor = QColor(220, 220, 220);
   ip_->indicatorTextColor = QColor(20, 20, 20);
   ip_->indicatorTipColor = QColor(255, 255, 255);
   ip_->indicatorCurrentColor = QColor(255, 255, 255);
-
-  imageNames.clear();
-  imageTips.clear();
 
   navPosition = Left;
   navStyle = Bar;
@@ -367,7 +362,7 @@ void CarouselWidget::initForm() {
   connect(animationIndicator, SIGNAL(valueChanged(const QVariant&)), this,
           SLOT(changeIndicator(const QVariant&)));
   animationIndicator->setEasingCurve(QEasingCurve::OutCubic);
-  animationIndicator->setDuration(1000);
+  animationIndicator->setDuration(500);
 
   animationGroup->addAnimation(animationIndicator);
 }
@@ -454,9 +449,9 @@ void CarouselWidget::changedAds() {
 void CarouselWidget::changedAds(QLabel* lab) {
   if (navStyle == NavStyle::Bar) {
     for (auto ele : labs) {
-      ele->setStyleSheet(
-          QString("background-color:%1").arg(ele == lab ? "red" : "green"));
-      // ele->setStyleSheet(ele == lab ? qssCurrent : qssNormal);
+      /*ele->setStyleSheet(
+          QString("background-color:%1").arg(ele == lab ? "red" : "green"));*/
+       ele->setStyleSheet(ele == lab ? qssCurrent : qssNormal);
     }
 
     animationImage->setStartValue(0);

@@ -7,7 +7,7 @@ class QHBoxLayout;
 class QSpacerItem;
 class QParallelAnimationGroup;
 class QPropertyAnimation;
-class ImageLabel;
+class QLabel;
 
 struct IndicatorProperty {
   int indicatorMinHeight;
@@ -49,9 +49,6 @@ class CarouselWidget : public QWidget {
 
   Q_PROPERTY(int interval READ getInterval WRITE setInterval)
 
-  Q_PROPERTY(QString imageNames READ getImageNames WRITE setImageNames)
-  Q_PROPERTY(QString imageTips READ getImageTips WRITE setImageTips)
-
   Q_PROPERTY(NavPosition navPosition READ getNavPosition WRITE setNavPosition)
   Q_PROPERTY(NavStyle navStyle READ getNavStyle WRITE setNavStyle)
 
@@ -65,9 +62,6 @@ class CarouselWidget : public QWidget {
 
   IndicatorProperty getIndicatorProperty() const;
   int getInterval() const;
-
-  QString getImageNames() const;
-  QString getImageTips() const;
 
   NavPosition getNavPosition() const;
   NavStyle getNavStyle() const;
@@ -87,10 +81,7 @@ class CarouselWidget : public QWidget {
   void setInterval(int interval);
   void setIndicatorProperty(IndicatorProperty& ip);
 
-  //设置图片名称
-  void setImageNames(const QString& imageNames);
-  //设置提示信息
-  void setImageTips(const QString& imageTips);
+  void addImage(const QString& image);
 
   //设置指示器位置
   void setNavPosition(const NavPosition& navPosition);
@@ -118,9 +109,6 @@ class CarouselWidget : public QWidget {
   QScopedPointer<IndicatorProperty> ip_;
 
   int intervalGap;
-
-  QString imageNames;  //图片名称
-  QString imageTips;   //提示信息
 
   NavPosition navPosition;  //指示器位置
   NavStyle navStyle;        //指示器样式

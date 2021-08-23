@@ -18,12 +18,11 @@ carouselTest::carouselTest(QWidget* parent) : QMainWindow(parent) {
   setCentralWidget(cw);
 
   for (int i = 0; i < 8; ++i)
-    cw->setImageNames(
-        QString(R"(D:\work\test\qt\carouselTest\images\Wall%1.png)").arg(i));
+    cw->addImage(QString("./images/Wall%1.png").arg(i));
 
-   cw->setNavPosition(Right);
+  cw->setNavPosition(Right);
   adjustSize();
 
-  cw->setNavStyle(NavStyle::Dot);
+  cw->setNavStyle(NavStyle::Bar);
   cw->start();
 }
