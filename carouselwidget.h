@@ -75,6 +75,8 @@ class CarouselWidget : public QWidget {
   QSize sizeHint() const;
   QSize minimumSizeHint() const;
 
+  void start();
+
  public slots:
   //…Ë÷√ Û±Í–¸Õ£Õ£÷π¬÷≤•
   void setHoverStop(bool hoverStop);
@@ -158,7 +160,7 @@ class CarouselWidget : public QWidget {
   void changedAds();
   void changedAds(QLabel* lab);
   void changedImage(const QVariant&);
-  void changedMin(const QVariant&);
+  void changeIndicator(const QVariant&);
 
  Q_SIGNALS:
   void clicked(int index);

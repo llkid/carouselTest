@@ -23,4 +23,7 @@ carouselTest::carouselTest(QWidget* parent) : QMainWindow(parent) {
 
    cw->setNavPosition(Right);
   adjustSize();
+
+  cw->setNavStyle(NavStyle::Dot);
+  cw->start();
 }

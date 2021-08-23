@@ -21,8 +21,6 @@ CarouselWidget::CarouselWidget(QWidget* parent) : QWidget(parent) {
   initWidget();
   initForm();
   initQss();
-
-  timer->start(intervalGap);
 }
 
 CarouselWidget::~CarouselWidget() {
@@ -58,6 +56,12 @@ NavStyle CarouselWidget::getNavStyle() const { return navStyle; }
 QSize CarouselWidget::sizeHint() const { return QSize(640, 360); }
 
 QSize CarouselWidget::minimumSizeHint() const { return QSize(640, 360); }
+
+void CarouselWidget::start() {
+  if (!timer->isActive()) {
+    timer->start(intervalGap);
+  }
+}
 
 void CarouselWidget::setShowNumber(bool showNumber) {
   this->showNumber = showNumber;
@@ -118,7 +122,26 @@ void CarouselWidget::setNavPosition(const NavPosition& navPosition) {
 }
 
 void CarouselWidget::setNavStyle(const NavStyle& navStyle) {
+  bool needRestart = false;
+  if (timer->isActive()) {
+    timer->stop();
+    needRestart = true;
+  }
+
   this->navStyle = navStyle;
+  initQss();
+
+  if (navStyle != NavStyle::Bar) {
+    for (int i = 0; i < labs.size(); ++i) {
+      auto lab = labs.at(i);
+      lab->setFixedSize(ip_->indicatorMaxWidth, ip_->indicatorMaxWidth);
+      lab->setStyleSheet(i == currentIndex ? qssCurrent : qssNormal);
+    }
+  }
+
+  if (needRestart) {
+    timer->start(intervalGap);
+  }
 }
 
 void CarouselWidget::setHoverStop(bool hoverStop) {
@@ -314,7 +337,7 @@ void CarouselWidget::initForm() {
   imageTips.clear();
 
   navPosition = Left;
-  navStyle = Ellipse;
+  navStyle = Bar;
 
   leftToRight = true;
   offset = 0;
@@ -342,7 +365,7 @@ void CarouselWidget::initForm() {
   //用于切换提示器宽度
   animationIndicator = new QPropertyAnimation(this, "");
   connect(animationIndicator, SIGNAL(valueChanged(const QVariant&)), this,
-          SLOT(changedMin(const QVariant&)));
+          SLOT(changeIndicator(const QVariant&)));
   animationIndicator->setEasingCurve(QEasingCurve::OutCubic);
   animationIndicator->setDuration(1000);
 
@@ -429,20 +452,31 @@ void CarouselWidget::changedAds() {
 }
 
 void CarouselWidget::changedAds(QLabel* lab) {
-  for (auto ele : labs) {
-    ele->setStyleSheet(
-        QString("background-color:%1").arg(ele == lab ? "red" : "green"));
-    // ele->setStyleSheet(ele == lab ? qssCurrent : qssNormal);
+  if (navStyle == NavStyle::Bar) {
+    for (auto ele : labs) {
+      ele->setStyleSheet(
+          QString("background-color:%1").arg(ele == lab ? "red" : "green"));
+      // ele->setStyleSheet(ele == lab ? qssCurrent : qssNormal);
+    }
+
+    animationImage->setStartValue(0);
+    animationImage->setEndValue(this->width());
+
+    animationIndicator->setStartValue(ip_->indicatorMaxWidth);
+    animationIndicator->setEndValue(ip_->indicatorMinWidth);
+
+    animationImage->start();
+    animationIndicator->start();
+  } else {
+    for (auto ele : labs) {
+       ele->setStyleSheet(ele == lab ? qssCurrent : qssNormal);
+    }
+
+    animationImage->setStartValue(0);
+    animationImage->setEndValue(this->width());
+
+    animationImage->start();
   }
-
-  animationImage->setStartValue(0);
-  animationImage->setEndValue(this->width());
-
-  animationIndicator->setStartValue(ip_->indicatorMaxWidth);
-  animationIndicator->setEndValue(ip_->indicatorMinWidth);
-
-  animationImage->start();
-  animationIndicator->start();
 }
 
 void CarouselWidget::changedImage(const QVariant& var) {
@@ -451,7 +485,7 @@ void CarouselWidget::changedImage(const QVariant& var) {
   update();
 }
 
-void CarouselWidget::changedMin(const QVariant& var) {
+void CarouselWidget::changeIndicator(const QVariant& var) {
   static int length = ip_->indicatorMinWidth + ip_->indicatorMaxWidth;
   int width = var.toInt();
   labs.at(previousIndex)->setFixedWidth(width);
